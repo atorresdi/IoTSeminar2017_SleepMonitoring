@@ -27,13 +27,20 @@
             android:layout_height="wrap_content"
             android:textSize="34sp" android:text="89" android:layout_gravity="center_horizontal"
             android:layout_marginTop="12dp"/>
-        <!--<Button
-            android:id="@+id/btn_send"
+        <Button
+            android:id="@+id/btn_startService"
             android:text="Send"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            />-->
+            />
+        <Button
+            android:id="@+id/btn_stopService"
+            android:text="Send"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            />
     </LinearLayout>
 
 </RelativeLayout>

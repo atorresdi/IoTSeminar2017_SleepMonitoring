@@ -22,6 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--Service declared in manifest -->
+        <service android:name=".SmartWatchService"
+            android:exported="false"/>
     </application>
 
 </manifest>
