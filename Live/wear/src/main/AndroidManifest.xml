@@ -6,6 +6,7 @@
 
     <!--<uses-permission android:name="android.permission.WAKE_LOCK" />-->
     <uses-permission android:name="android.permission.BODY_SENSORS" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:allowBackup="true"
@@ -29,6 +30,8 @@
 
         <!--Service declared in manifest -->
         <service android:name=".SmartWatchService"
+            android:exported="false"/>
+        <service android:name=".ReceiveMessageService"
             android:exported="false"/>
         <receiver android:name="AlarmReceiver"></receiver>
     </application>

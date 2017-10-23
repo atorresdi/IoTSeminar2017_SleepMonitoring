@@ -2,25 +2,23 @@ package com.example.david.live;
 
 import android.app.Service;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
+import android.os.Vibrator;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
-import com.opencsv.CSVWriter;
-
-import java.io.File;
-import java.io.FileWriter;
 
 /**
  * Created by David on 16-Oct-17.
  */
 
-public class SmartWatchService extends Service implements GoogleApiClient.ConnectionCallbacks, MessageApi.MessageListener{
+public class ReceiveMessageService extends Service implements GoogleApiClient.ConnectionCallbacks, MessageApi.MessageListener{
 
     private static final String TAG = "SmartWatchComms";
 
@@ -29,16 +27,17 @@ public class SmartWatchService extends Service implements GoogleApiClient.Connec
     private GoogleApiClient mApiClient;
     private static final String WEAR_MESSAGE_PATH = "/message";
 
-    File dir = new File (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+("/Cell"));
-    File file;
+    private Sensor mHeartRateSensor;
+    private SensorManager mSensorManager;
 
     @Override
     public void onCreate(){
         Log.i(TAG, "Service onCreate");
 
         isRunning = true;
-        file = new File(dir, ("TrainingData.csv"));
+
     }
+
     private void initGoogleApiClient() {
         mApiClient = new GoogleApiClient.Builder( this )
                 .addApi( Wearable.API )
@@ -52,28 +51,14 @@ public class SmartWatchService extends Service implements GoogleApiClient.Connec
     @Override
     public void onMessageReceived( final MessageEvent messageEvent ) {
         Log.i(TAG, "Service MessageReceived");
-        /*try {
-            CSVWriter writer = new CSVWriter(new FileWriter(file, true), ',');
-            String[] line = {Long.toString(System.currentTimeMillis()), new String(messageEvent.getData() )};
-
-            writer.writeNext(line);
-            //textRssi.setText(file.getAbsolutePath());
-            writer.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
 
         if( messageEvent.getPath().equalsIgnoreCase( WEAR_MESSAGE_PATH ) ) {
-            try {
-                CSVWriter writer = new CSVWriter(new FileWriter(file, true), ',');
-                String[] line = {Long.toString(System.currentTimeMillis()), new String(messageEvent.getData())};
-
-                writer.writeNext(line);
-                //textRssi.setText(file.getAbsolutePath());
-                writer.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            Log.i(TAG, String.format("Message: %s", new String(messageEvent.getData())));
+            Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+            long[] vibrationPattern = {0, 500, 50, 300};
+            //-1 - don't repeat
+            final int indexInPatternToRepeat = -1;
+            vibrator.vibrate(vibrationPattern, indexInPatternToRepeat);
         }
     }
 
@@ -86,37 +71,22 @@ public class SmartWatchService extends Service implements GoogleApiClient.Connec
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Log.i(TAG, "Service onStartCommand");
-        initGoogleApiClient();
 
         //Creating new thread for my service
         //Always write your long running tasks in a separate thread, to avoid ANR
-        /*new Thread(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
 
-                //Your logic that service will perform will be placed here
-                //In this example we are just looping and waits for 1000 milliseconds in each loop.
-                for (int i = 0; i < 10; i++) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
-                    }
-
-                    if(isRunning){
-                        Log.i(TAG, "Service running");
-                        //Toast.makeText(getBaseContext(), "Your answer is correct!" , Toast.LENGTH_SHORT ).show();
-                    }
-                }
                 initGoogleApiClient();
 
                 //Stop service once it finishes its task
                 //stopSelf();
             }
-        }).start();*/
+        }).start();
 
         return Service.START_STICKY;
     }
-
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -134,6 +104,7 @@ public class SmartWatchService extends Service implements GoogleApiClient.Connec
         }
         if( mApiClient != null )
             mApiClient.unregisterConnectionCallbacks( this );
+
         isRunning = false;
 
         Log.i(TAG, "Service onDestroy");

@@ -49,7 +49,6 @@ public class SmartWatchService extends Service implements SensorEventListener, G
     private void initGoogleApiClient() {
         mApiClient = new GoogleApiClient.Builder( this )
                 .addApi( Wearable.API )
-                //.addConnectionCallbacks( this )
                 .build();
 
         if( mApiClient != null && !( mApiClient.isConnected() || mApiClient.isConnecting() ) )
@@ -84,7 +83,6 @@ public class SmartWatchService extends Service implements SensorEventListener, G
     @Override
     public void onConnected(Bundle bundle) {
         sendMessage( START_ACTIVITY, "" );
-        //Wearable.MessageApi.addListener( mApiClient, this );
     }
 
     @Override
@@ -92,32 +90,6 @@ public class SmartWatchService extends Service implements SensorEventListener, G
 
         Log.i(TAG, "Service onStartCommand");
         initGoogleApiClient();
-
-        //Creating new thread for my service
-        //Always write your long running tasks in a separate thread, to avoid ANR
-        /*new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                //Your logic that service will perform will be placed here
-                //In this example we are just looping and waits for 1000 milliseconds in each loop.
-                for (int i = 0; i < 10; i++) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
-                    }
-
-                    if(isRunning){
-                        Log.i(TAG, "Service running");
-                        //Toast.makeText(getBaseContext(), "Your answer is correct!" , Toast.LENGTH_SHORT ).show();
-                    }
-                }
-                initGoogleApiClient();
-
-                //Stop service once it finishes its task
-                //stopSelf();
-            }
-        }).start();*/
 
         return Service.START_STICKY;
     }
@@ -136,14 +108,6 @@ public class SmartWatchService extends Service implements SensorEventListener, G
 
     @Override
     public void onDestroy() {
-        /*if ( mApiClient != null ) {
-            Wearable.MessageApi.removeListener( mApiClient, this );
-            if ( mApiClient.isConnected() ) {
-                mApiClient.disconnect();
-            }
-        }
-        if( mApiClient != null )
-            mApiClient.unregisterConnectionCallbacks( this );*/
         mSensorManager.unregisterListener(this);
         mApiClient.disconnect();
         isRunning = false;
