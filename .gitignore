@@ -53,6 +53,7 @@ google-services.json
 freeline.py
 freeline/
 freeline_project_description.json
+<<<<<<< HEAD
 
 # other
 Live/.idea/misc.xml
@@ -165,3 +166,5 @@ venv.bak/
 .mypy_cache/
 
 
+=======
+>>>>>>> parent of 6707732... gitignore modified to ignore gradle files
