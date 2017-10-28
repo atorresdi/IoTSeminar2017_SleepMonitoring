@@ -1,25 +1,22 @@
 package com.example.david.live;
 
 import android.app.Activity;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.wearable.view.WatchViewStub;
-import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.wearable.MessageApi;
-import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.NodeApi;
-import com.google.android.gms.wearable.Wearable;
 
-import java.util.concurrent.CountDownLatch;
-
-public class MainActivity extends Activity implements SensorEventListener, GoogleApiClient.ConnectionCallbacks{
+public class MainActivity extends Activity{// implements SensorEventListener, GoogleApiClient.ConnectionCallbacks{
     private static final String START_ACTIVITY = "/start_activity";
     private static final String WEAR_MESSAGE_PATH = "/message";
     private GoogleApiClient mApiClient;
@@ -28,164 +25,76 @@ public class MainActivity extends Activity implements SensorEventListener, Googl
 
     private TextView rate;
     private TextView accuracy;
-    private TextView sensorInformation;
-    private static final int SENSOR_TYPE_HEARTRATE = 65562;
-    private Sensor mHeartRateSensor;
-    private SensorManager mSensorManager;
-    private CountDownLatch latch;
+
+    private PendingIntent pendingIntent;
+    private AlarmManager alarmManager;
+
+    private Button mStartButton, mStopButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-        latch = new CountDownLatch(1);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        initGoogleApiClient();
+
+        final Intent alarm = new Intent(this, AlarmReceiver.class);
 
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
             public void onLayoutInflated(WatchViewStub stub) {
-                rate = (TextView) stub.findViewById(R.id.rate);
-                rate.setText("Reading...");
+            rate = (TextView) stub.findViewById(R.id.rate);
+            rate.setText("Reading...");
 
-                accuracy = (TextView) stub.findViewById(R.id.accuracy);
-                sensorInformation = (TextView) stub.findViewById(R.id.sensor);
+            accuracy = (TextView) stub.findViewById(R.id.accuracy);
+            mStartButton = (Button) findViewById(R.id.btn_startService);
+            mStopButton = (Button) findViewById(R.id.btn_stopService);
 
-                latch.countDown();
-            }
-        });
-
-        mSensorManager = ((SensorManager)getSystemService(SENSOR_SERVICE));
-        //mHeartRateSensor = mSensorManager.getDefaultSensor(SENSOR_TYPE_HEARTRATE); // using Sensor Lib2 (Samsung Gear Live)
-        mHeartRateSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE); // using Sensor Lib (Samsung Gear Live)
-        //mHeartRateSensor = mSensorManager.getDefaultSensor(65562);
-        //mSensorManager.registerListener(this, this.mHeartRateSensor, 3);
-
-
-    }
-
-    private void initGoogleApiClient() {
-        mApiClient = new GoogleApiClient.Builder( this )
-                .addApi( Wearable.API )
-                //.addConnectionCallbacks( this )
-                .build();
-
-        if( mApiClient != null && !( mApiClient.isConnected() || mApiClient.isConnecting() ) )
-            mApiClient.connect();
-    }
-
-    private void sendMessage( final String path, final String text ) {
-        new Thread( new Runnable() {
-            @Override
-            public void run() {
-                NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes( mApiClient ).await();
-                for(Node node : nodes.getNodes()) {
-                    MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(
-                            mApiClient, node.getId(), path, text.getBytes() ).await();
+            mStartButton.setOnClickListener( new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                mStartButton.setText("Started");
+                if(!isServiceRunning(ReceiveMessageService.class)){
+                    Intent intent = new Intent(MainActivity.this, ReceiveMessageService.class);
+                    startService(intent);
                 }
 
-                runOnUiThread( new Runnable() {
-                    @Override
-                    public void run() {
-                        accuracy.setText( text );
-                    }
-                });
-            }
-        }).start();
-    }
+                boolean alarmRunning = (PendingIntent.getBroadcast(MainActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
+                if(alarmRunning == false) {
+                    pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, alarm, 0);
+                    alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 10000, pendingIntent);
 
-    /*@Override
-    public void onMessageReceived( final MessageEvent messageEvent ) {
-        runOnUiThread( new Runnable() {
-            @Override
-            public void run() {
-                if( messageEvent.getPath().equalsIgnoreCase( WEAR_MESSAGE_PATH ) ) {
-                    //mAdapter.add(new String(messageEvent.getData()));
-                    //mAdapter.notifyDataSetChanged();
-                    accuracy.setText(new String(messageEvent.getData()));
                 }
+                }
+            });
+            mStopButton.setOnClickListener( new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                mStopButton.setText("Stopped");
+                Intent intent = new Intent(MainActivity.this, ReceiveMessageService.class);
+                stopService(intent);
+
+                boolean alarmRunning = (PendingIntent.getBroadcast(MainActivity.this, 0, alarm, PendingIntent.FLAG_CANCEL_CURRENT) != null);
+                if(alarmRunning == false) {
+                    pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, alarm, 0);
+                    alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.cancel(pendingIntent);
+                }
+                }
+            });
             }
         });
-    }*/
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        //Wearable.MessageApi.addListener( mApiClient, this );
-        sendMessage( START_ACTIVITY, "" );
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        mSensorManager.registerListener(this, this.mHeartRateSensor, SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (mSensorManager != null) {
-            mSensorManager.registerListener(this, this.mHeartRateSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        }
-        /*if (mApiClient != null && !(mApiClient.isConnected() || mApiClient.isConnecting())){
-            mApiClient.connect();
-        }*/
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        try {
-            latch.await();
-            if(sensorEvent.values[0] > 0){
-                Log.d(TAG, "sensor event: " + sensorEvent.accuracy + " = " + sensorEvent.values[0]);
-                rate.setText(String.valueOf(sensorEvent.values[0]));
-                sendMessage( WEAR_MESSAGE_PATH, String.valueOf(sensorEvent.values[0]) );
-                //accuracy.setText("Accuracy: "+sensorEvent.accuracy);
-                sensorInformation.setText(sensorEvent.sensor.toString());
+    private boolean isServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
             }
-
-        } catch (InterruptedException e) {
-            Log.e(TAG, e.getMessage(), e);
         }
-
-
-
-
+        return false;
     }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-        Log.d(TAG, "accuracy changed: " + i);
-    }
-
-    @Override
-    protected void onStop() {
-        /*if ( mApiClient != null ) {
-            Wearable.MessageApi.removeListener( mApiClient, this );
-            if ( mApiClient.isConnected() ) {
-                mApiClient.disconnect();
-            }
-        }*/
-
-        super.onStop();
-
-        mSensorManager.unregisterListener(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        /*if( mApiClient != null )
-            mApiClient.unregisterConnectionCallbacks( this );*/
-        super.onDestroy();
-        mApiClient.disconnect();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
 }

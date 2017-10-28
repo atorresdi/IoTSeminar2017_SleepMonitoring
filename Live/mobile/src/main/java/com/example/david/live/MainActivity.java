@@ -1,72 +1,56 @@
 package com.example.david.live;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.MessageApi;
-import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
-import com.opencsv.CSVWriter;
-
-import java.io.File;
-import java.io.FileWriter;
 
 
-public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, MessageApi.MessageListener {
+public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks {
     private GoogleApiClient mApiClient;
     private static final String START_ACTIVITY = "/start_activity";
     private static final String WEAR_MESSAGE_PATH = "/message";
 
-    private ArrayAdapter<String> mAdapter;
-
-    //private ListView mListView;
     private TextView mEditText;
-    //private Button mSendButton;
-    File dir = new File (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+("/Cell"));
-    File file;
-    FileWriter fw;
+    private Button mstartButton, mstopButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
-        if(!dir.exists()) {
-            if(dir.mkdir()); //directory is created;
-        }
-        file = new File(dir, ("TrainingData.csv"));
-        /*try {
-            fw = new FileWriter(file, true);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
-        //mListView = (ListView) findViewById(R.id.list_view);
         mEditText = (TextView) findViewById(R.id.input);
-        //mSendButton = (Button) findViewById(R.id.btn_send);
 
-        /*mAdapter = new ArrayAdapter<String>( this, android.R.layout.simple_list_item_1 );
-        mListView.setAdapter( mAdapter );*/
+        mstartButton = (Button) findViewById(R.id.btn_startService);
+        mstopButton = (Button) findViewById(R.id.btn_stopService);
 
-        /*mSendButton.setOnClickListener( new View.OnClickListener() {
+        mstartButton.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String text = mEditText.getText().toString();
-                if (!TextUtils.isEmpty(text)) {
-                    mAdapter.add(text);
-                    mAdapter.notifyDataSetChanged();
-
-                    //sendMessage(WEAR_MESSAGE_PATH, text);
-                }
+                mstartButton.setText("Start Pressed");
+                Intent intent = new Intent(MainActivity.this, SmartWatchService.class);
+                startService(intent);
+                sendMessage( WEAR_MESSAGE_PATH, "Hello World" );
             }
-        });*/
+        });
+        mstopButton.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mstopButton.setText("Stop Pressed");
+                Intent intent = new Intent(MainActivity.this, SmartWatchService.class);
+                stopService(intent);
+            }
+        });
 
         initGoogleApiClient();
         mEditText.setText("Reading...");
@@ -75,40 +59,16 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     private void initGoogleApiClient() {
         mApiClient = new GoogleApiClient.Builder( this )
                 .addApi( Wearable.API )
-                .addConnectionCallbacks( this )
                 .build();
 
-        if( mApiClient != null && !( mApiClient.isConnected() || mApiClient.isConnecting() ) )
+        if( mApiClient != null && !( mApiClient.isConnected() || mApiClient.isConnecting() ) ) {
             mApiClient.connect();
-    }
-
-    @Override
-    public void onMessageReceived( final MessageEvent messageEvent ) {
-        runOnUiThread( new Runnable() {
-        @Override
-        public void run() {
-            if( messageEvent.getPath().equalsIgnoreCase( WEAR_MESSAGE_PATH ) ) {
-                mEditText.setText( new String(messageEvent.getData() ));
-
-                try {
-                    CSVWriter writer = new CSVWriter(new FileWriter(file, true), ',');
-                    String[] line = {Long.toString(System.currentTimeMillis()), new String(messageEvent.getData() )};
-
-                    writer.writeNext(line);
-                    //textRssi.setText(file.getAbsolutePath());
-                    writer.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
         }
-    });
     }
 
     @Override
     public void onConnected(Bundle bundle) {
-        //sendMessage( START_ACTIVITY, "" );
-        Wearable.MessageApi.addListener( mApiClient, this );
+        sendMessage( START_ACTIVITY, "" );
     }
 
     @Override
@@ -140,25 +100,11 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
     @Override
     protected void onDestroy() {
-        if( mApiClient != null )
-            mApiClient.unregisterConnectionCallbacks( this );
-        super.onDestroy();
-        //mApiClient.disconnect();
+       super.onDestroy();
+        mApiClient.disconnect();
     }
 
-    @Override
-    protected void onStop() {
-        if ( mApiClient != null ) {
-            Wearable.MessageApi.removeListener( mApiClient, this );
-            if ( mApiClient.isConnected() ) {
-                mApiClient.disconnect();
-            }
-        }
-
-        super.onStop();
-    }
-
-   /* private void sendMessage( final String path, final String text ) {
+    private void sendMessage( final String path, final String text ) {
         new Thread( new Runnable() {
             @Override
             public void run() {
@@ -168,15 +114,15 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                             mApiClient, node.getId(), path, text.getBytes() ).await();
                 }
 
-                *//*runOnUiThread( new Runnable() {
+                /*runOnUiThread( new Runnable() {
                     @Override
                     public void run() {
                         mEditText.setText( "" );
                     }
-                });*//*
+                });*/
             }
         }).start();
-    }*/
+    }
 
     @Override
     public void onConnectionSuspended(int i) {
