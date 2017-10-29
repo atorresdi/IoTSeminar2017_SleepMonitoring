@@ -65,7 +65,7 @@ public class SmartWatchService extends Service implements SensorEventListener, G
                             mApiClient, node.getId(), path, text.getBytes() ).await();
                 }
                 Log.d(TAG, "Sent Message");
-                stopSelf();
+                //stopSelf();
             }
         }).start();
     }

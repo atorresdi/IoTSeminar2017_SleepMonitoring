@@ -53,7 +53,15 @@ public class ReceiveMessageService extends Service implements GoogleApiClient.Co
         Log.i(TAG, "Service MessageReceived");
 
         if( messageEvent.getPath().equalsIgnoreCase( WEAR_MESSAGE_PATH ) ) {
-            Log.i(TAG, String.format("Message: %s", new String(messageEvent.getData())));
+            String msg = new String(messageEvent.getData());
+            Log.i(TAG, String.format("Message: %s", msg));
+            if(msg.equals("Hello World")){
+                Intent intent = new Intent(ReceiveMessageService.this, SmartWatchService.class);
+                startService(intent);
+            }else if(msg.equals("Goodbye World")){
+                Intent intent = new Intent(ReceiveMessageService.this, SmartWatchService.class);
+                stopService(intent);
+            }
             Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
             long[] vibrationPattern = {0, 500, 50, 300};
             //-1 - don't repeat

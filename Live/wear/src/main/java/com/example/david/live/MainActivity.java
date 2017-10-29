@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.wearable.view.WatchViewStub;
 import android.view.View;
 import android.view.WindowManager;
@@ -59,29 +58,40 @@ public class MainActivity extends Activity{// implements SensorEventListener, Go
                     Intent intent = new Intent(MainActivity.this, ReceiveMessageService.class);
                     startService(intent);
                 }
+                if(!isServiceRunning(SmartWatchService.class)){
+                    Intent intent = new Intent(MainActivity.this, SmartWatchService.class);
+                    startService(intent);
+                }
 
-                boolean alarmRunning = (PendingIntent.getBroadcast(MainActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
+                /*boolean alarmRunning = (PendingIntent.getBroadcast(MainActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
                 if(alarmRunning == false) {
                     pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, alarm, 0);
                     alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                     alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 10000, pendingIntent);
 
-                }
+                }*/
                 }
             });
             mStopButton.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                mStopButton.setText("Stopped");
-                Intent intent = new Intent(MainActivity.this, ReceiveMessageService.class);
-                stopService(intent);
+                    mStopButton.setText("Stopped");
 
-                boolean alarmRunning = (PendingIntent.getBroadcast(MainActivity.this, 0, alarm, PendingIntent.FLAG_CANCEL_CURRENT) != null);
-                if(alarmRunning == false) {
-                    pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, alarm, 0);
-                    alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.cancel(pendingIntent);
-                }
+                    if(!isServiceRunning(ReceiveMessageService.class)){
+                        Intent intent = new Intent(MainActivity.this, ReceiveMessageService.class);
+                        stopService(intent);
+                    }
+
+                    /*boolean alarmRunning = (PendingIntent.getBroadcast(MainActivity.this, 0, alarm, PendingIntent.FLAG_CANCEL_CURRENT) != null);
+                    if(alarmRunning == false) {
+                        pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, alarm, 0);
+                        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                        alarmManager.cancel(pendingIntent);
+                    }*/
+                    //if(!isServiceRunning(SmartWatchService.class)){
+                        Intent intent = new Intent(MainActivity.this, SmartWatchService.class);
+                        stopService(intent);
+                    //}
                 }
             });
             }

@@ -52,16 +52,6 @@ public class SmartWatchService extends Service implements GoogleApiClient.Connec
     @Override
     public void onMessageReceived( final MessageEvent messageEvent ) {
         Log.i(TAG, "Service MessageReceived");
-        /*try {
-            CSVWriter writer = new CSVWriter(new FileWriter(file, true), ',');
-            String[] line = {Long.toString(System.currentTimeMillis()), new String(messageEvent.getData() )};
-
-            writer.writeNext(line);
-            //textRssi.setText(file.getAbsolutePath());
-            writer.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
 
         if( messageEvent.getPath().equalsIgnoreCase( WEAR_MESSAGE_PATH ) ) {
             try {
@@ -69,7 +59,6 @@ public class SmartWatchService extends Service implements GoogleApiClient.Connec
                 String[] line = {Long.toString(System.currentTimeMillis()), new String(messageEvent.getData())};
 
                 writer.writeNext(line);
-                //textRssi.setText(file.getAbsolutePath());
                 writer.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -87,32 +76,6 @@ public class SmartWatchService extends Service implements GoogleApiClient.Connec
 
         Log.i(TAG, "Service onStartCommand");
         initGoogleApiClient();
-
-        //Creating new thread for my service
-        //Always write your long running tasks in a separate thread, to avoid ANR
-        /*new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                //Your logic that service will perform will be placed here
-                //In this example we are just looping and waits for 1000 milliseconds in each loop.
-                for (int i = 0; i < 10; i++) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
-                    }
-
-                    if(isRunning){
-                        Log.i(TAG, "Service running");
-                        //Toast.makeText(getBaseContext(), "Your answer is correct!" , Toast.LENGTH_SHORT ).show();
-                    }
-                }
-                initGoogleApiClient();
-
-                //Stop service once it finishes its task
-                //stopSelf();
-            }
-        }).start();*/
 
         return Service.START_STICKY;
     }

@@ -1,7 +1,6 @@
 package com.example.david.live;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,18 +36,21 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         mstartButton.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mstartButton.setText("Start Pressed");
-                Intent intent = new Intent(MainActivity.this, SmartWatchService.class);
-                startService(intent);
+                mstartButton.setText("Started");
+                mstopButton.setText("Stop");
+                /*Intent intent = new Intent(MainActivity.this, SmartWatchService.class);
+                startService(intent);*/
                 sendMessage( WEAR_MESSAGE_PATH, "Hello World" );
             }
         });
         mstopButton.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mstopButton.setText("Stop Pressed");
-                Intent intent = new Intent(MainActivity.this, SmartWatchService.class);
-                stopService(intent);
+                mstopButton.setText("Stopped");
+                mstartButton.setText("Start");
+                /*Intent intent = new Intent(MainActivity.this, SmartWatchService.class);
+                stopService(intent);*/
+                sendMessage( WEAR_MESSAGE_PATH, "Goodbye World" );
             }
         });
 
@@ -101,7 +103,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     @Override
     protected void onDestroy() {
        super.onDestroy();
-        mApiClient.disconnect();
+       mApiClient.disconnect();
     }
 
     private void sendMessage( final String path, final String text ) {
@@ -113,13 +115,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                     MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(
                             mApiClient, node.getId(), path, text.getBytes() ).await();
                 }
-
-                /*runOnUiThread( new Runnable() {
-                    @Override
-                    public void run() {
-                        mEditText.setText( "" );
-                    }
-                });*/
             }
         }).start();
     }
