@@ -28,22 +28,40 @@ public class SmartWatchService extends Service implements SensorEventListener, G
 
     private GoogleApiClient mApiClient;
     private static final String START_ACTIVITY = "/start_activity";
-    private static final String WEAR_MESSAGE_PATH = "/message";
+    private static final String HR_MESSAGE_PATH = "/heart_rate";
+    private static final String ACC_MESSAGE_PATH = "/accelerometer";
 
     private Sensor mHeartRateSensor;
     private SensorManager mSensorManager;
+    private Sensor accelerometer;
+
+    private float [][] acc;
+    private int accCnt;
+    private static final int ACC_WINDOW_SIZE = 100;
 
     @Override
     public void onCreate(){
         Log.i(TAG, "Service onCreate");
-
         isRunning = true;
 
         mSensorManager = ((SensorManager)getSystemService(SENSOR_SERVICE));
         mHeartRateSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE); // using Sensor Lib (Samsung Gear Live)
 
+        acc = new float[100][3];
+        accCnt = 0;
 
         mSensorManager.registerListener(this, this.mHeartRateSensor, SensorManager.SENSOR_DELAY_NORMAL);
+
+
+        // if the default accelerometer exists
+        if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
+            // set accelerometer
+            accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            // register 'this' as a listener that updates values. Each time a sensor value changes,
+            // the method 'onSensorChanged()' is called.
+            mSensorManager.registerListener((SensorEventListener) this, accelerometer,
+                    SensorManager.SENSOR_DELAY_NORMAL);
+        }
     }
 
     private void initGoogleApiClient() {
@@ -72,10 +90,43 @@ public class SmartWatchService extends Service implements SensorEventListener, G
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if(sensorEvent.values[0] > 0){
+        switch (sensorEvent.sensor.getType()) {
+            case Sensor.TYPE_ACCELEROMETER:
+                Log.d(TAG, "Acceleration event: " + sensorEvent.accuracy + " = " + sensorEvent.values[0] + ", " + sensorEvent.values[1] + ", " + sensorEvent.values[2]);
+                if(accCnt<ACC_WINDOW_SIZE-1) {
+                    acc[accCnt][0] = sensorEvent.values[0];
+                    acc[accCnt][1] = sensorEvent.values[1];
+                    acc[accCnt][2] = sensorEvent.values[2];
+                    accCnt++;
+                }
+                else{
+                    acc[accCnt][0] = sensorEvent.values[0];
+                    acc[accCnt][1] = sensorEvent.values[1];
+                    acc[accCnt][2] = sensorEvent.values[2];
+                    accCnt = 0;
+                    String temp = "";
+                    float [] sum = {0,0,0};
+                    for(int i=0;i<ACC_WINDOW_SIZE;i++) {
+                        sum[0] += acc[i][0];
+                        sum[1] += acc[i][1];
+                        sum[2] += acc[i][2];
+                    }
+                    temp += String.valueOf(sum[0]/ACC_WINDOW_SIZE) + "," + String.valueOf(sum[1]/ACC_WINDOW_SIZE) + "," + String.valueOf(sum[2]/ACC_WINDOW_SIZE);
+                    sendMessage( ACC_MESSAGE_PATH, temp);
+                }
+
+                break;
+            case Sensor.TYPE_HEART_RATE:
+                Log.d(TAG, "Heart Rate event: " + sensorEvent.accuracy + " = " + sensorEvent.values[0]);
+                sendMessage( HR_MESSAGE_PATH, String.valueOf(sensorEvent.values[0]) );
+                break;
+            default:
+                Log.d(TAG, "Unknown Sensor event: " + sensorEvent.sensor.getName());
+        }
+       /* if(sensorEvent.values[0] > 0){
             Log.d(TAG, "sensor event: " + sensorEvent.accuracy + " = " + sensorEvent.values[0]);
             sendMessage( WEAR_MESSAGE_PATH, String.valueOf(sensorEvent.values[0]) );
-        }
+        }*/
     }
 
 

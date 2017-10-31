@@ -35,6 +35,9 @@ public class MainActivity extends Activity{// implements SensorEventListener, Go
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
+        Intent intent = new Intent(MainActivity.this, ReceiveMessageService.class);
+        startService(intent);
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         final Intent alarm = new Intent(this, AlarmReceiver.class);

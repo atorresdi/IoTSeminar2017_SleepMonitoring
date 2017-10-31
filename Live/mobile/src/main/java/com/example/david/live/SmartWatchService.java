@@ -27,17 +27,19 @@ public class SmartWatchService extends Service implements GoogleApiClient.Connec
     private boolean isRunning = false;
 
     private GoogleApiClient mApiClient;
-    private static final String WEAR_MESSAGE_PATH = "/message";
+    private static final String HR_MESSAGE_PATH = "/heart_rate";
+    private static final String ACC_MESSAGE_PATH = "/accelerometer";
 
     File dir = new File (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+("/Cell"));
-    File file;
+    File hrfile, accfile;
 
     @Override
     public void onCreate(){
         Log.i(TAG, "Service onCreate");
 
         isRunning = true;
-        file = new File(dir, ("TrainingData.csv"));
+        hrfile = new File(dir, ("HRTrainingData.csv"));
+        accfile = new File(dir, ("AccTrainingData.csv"));
     }
     private void initGoogleApiClient() {
         mApiClient = new GoogleApiClient.Builder( this )
@@ -51,12 +53,26 @@ public class SmartWatchService extends Service implements GoogleApiClient.Connec
 
     @Override
     public void onMessageReceived( final MessageEvent messageEvent ) {
-        Log.i(TAG, "Service MessageReceived");
-
-        if( messageEvent.getPath().equalsIgnoreCase( WEAR_MESSAGE_PATH ) ) {
+        if( messageEvent.getPath().equalsIgnoreCase( HR_MESSAGE_PATH ) ) {
+            Log.i(TAG, "Heart Rate MessageReceived");
             try {
-                CSVWriter writer = new CSVWriter(new FileWriter(file, true), ',');
+                CSVWriter writer = new CSVWriter(new FileWriter(hrfile, true), ',');
                 String[] line = {Long.toString(System.currentTimeMillis()), new String(messageEvent.getData())};
+
+                writer.writeNext(line);
+                writer.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if( messageEvent.getPath().equalsIgnoreCase( ACC_MESSAGE_PATH ) ) {
+            Log.i(TAG, "Acceleration MessageReceived");
+            try {
+                CSVWriter writer = new CSVWriter(new FileWriter(accfile, true), ',');
+                String temp = new String(messageEvent.getData());
+                String[] acc = temp.split(",");
+                String[] line = {Long.toString(System.currentTimeMillis()), acc[0], acc[1], acc[2]};
 
                 writer.writeNext(line);
                 writer.close();
@@ -75,7 +91,19 @@ public class SmartWatchService extends Service implements GoogleApiClient.Connec
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Log.i(TAG, "Service onStartCommand");
-        initGoogleApiClient();
+
+        //Creating new thread for my service
+        //Always write your long running tasks in a separate thread, to avoid ANR
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                initGoogleApiClient();
+
+                //Stop service once it finishes its task
+                //stopSelf();
+            }
+        }).start();
 
         return Service.START_STICKY;
     }

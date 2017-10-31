@@ -1,6 +1,7 @@
 package com.example.david.live;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,8 +39,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
             public void onClick(View view) {
                 mstartButton.setText("Started");
                 mstopButton.setText("Stop");
-                /*Intent intent = new Intent(MainActivity.this, SmartWatchService.class);
-                startService(intent);*/
+                Intent intent = new Intent(MainActivity.this, SmartWatchService.class);
+                startService(intent);
                 sendMessage( WEAR_MESSAGE_PATH, "Hello World" );
             }
         });
@@ -48,8 +49,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
             public void onClick(View view) {
                 mstopButton.setText("Stopped");
                 mstartButton.setText("Start");
-                /*Intent intent = new Intent(MainActivity.this, SmartWatchService.class);
-                stopService(intent);*/
+                Intent intent = new Intent(MainActivity.this, SmartWatchService.class);
+                stopService(intent);
                 sendMessage( WEAR_MESSAGE_PATH, "Goodbye World" );
             }
         });

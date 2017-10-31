@@ -61,12 +61,19 @@ public class ReceiveMessageService extends Service implements GoogleApiClient.Co
             }else if(msg.equals("Goodbye World")){
                 Intent intent = new Intent(ReceiveMessageService.this, SmartWatchService.class);
                 stopService(intent);
+                Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                long[] vibrationPattern = {0, 500, 50, 300};
+                //-1 - don't repeat
+                final int indexInPatternToRepeat = -1;
+                vibrator.vibrate(vibrationPattern, indexInPatternToRepeat);
+
             }
             Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-            long[] vibrationPattern = {0, 500, 50, 300};
+            long[] vibrationPattern = {0, 100, 50, 100};
             //-1 - don't repeat
             final int indexInPatternToRepeat = -1;
             vibrator.vibrate(vibrationPattern, indexInPatternToRepeat);
+            stopSelf();
         }
     }
 
