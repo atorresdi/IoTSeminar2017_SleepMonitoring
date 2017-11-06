@@ -47,27 +47,15 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                String msg;
-//                if (started) {
-//                    msg = "SensorService stopped";
-//                    ServiceComm.executeAction(context, WatchCommService.SERVICE_NAME, WatchCommService.ACT_STOP);
-//                }
-//                else {
-//                    msg = "SensorService started";
-//                    ServiceComm.executeAction(context, WatchCommService.SERVICE_NAME, WatchCommService.ACT_START);
-//                }
-//                started = !started;
-//
-//                Snackbar.make(view, msg, Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-
                 String msg;
                 if (started) {
-                    msg = "MicrophoneService stopped";
+                    msg = "stopped";
+                    ServiceComm.executeAction(context, WatchCommService.SERVICE_NAME, WatchCommService.ACT_STOP);
                     ServiceComm.executeAction(context, MicrophoneService.SERVICE_NAME, MicrophoneService.ACT_STOP);
                 }
                 else {
-                    msg = "MicrophoneService started";
+                    msg = "started";
+                    ServiceComm.executeAction(context, WatchCommService.SERVICE_NAME, WatchCommService.ACT_START);
                     ServiceComm.executeAction(context, MicrophoneService.SERVICE_NAME, MicrophoneService.ACT_START);
                 }
                 started = !started;
