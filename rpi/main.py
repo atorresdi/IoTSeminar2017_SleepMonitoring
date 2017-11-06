@@ -1,20 +1,40 @@
+
 import comm
+import datetime
 import time
 import threading
 import json
 from Queue import Queue
 
-# transmision test
-# send JSON every n secs
-def tx_test():
-  ANDROID_IP = "172.20.90.119"
-  ANDROID_PORT = 5555
-  js_str = '{ "name":"John", "age":30, "car":null }'
-  js = json.loads(js_str)
-  while 1:
-    time.sleep(2)
-    comm.send(ANDROID_IP, ANDROID_PORT, json.dumps(js))
+# file names
+dateTimeStr = datetime.datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
+ACC_FILE_NAME = dateTimeStr + "_acc.csv"
+HR_FILE_NAME = dateTimeStr + "_hr.csv"
 
+# stores acceleration data in csv format
+def storeAccData(jsonObj):
+  timestamp = jsonObj['timestamp']
+  accX = jsonObj['accX']
+  accY = jsonObj['accY']
+  accZ = jsonObj['accZ']
+
+  file = open(ACC_FILE_NAME, 'a+')
+  for idx, val in enumerate(timestamp):
+    file.write(str(timestamp[idx]) + ", " + str(accX[idx]) + ", " + str(accY[idx]) + ", " + str(accZ[idx]) + "\n")
+  file.close
+
+# stores heart rate data in csv format
+def storeHRData(jsonObj):
+  timestamp = jsonObj['timestamp']
+  accuracy = jsonObj['accuracy']
+  heartRate = jsonObj['heartRate']
+
+  file = open(HR_FILE_NAME, 'a+')
+  for idx, val in enumerate(timestamp):
+    file.write(str(timestamp[idx]) + ", " + str(accuracy[idx]) + ", " + str(heartRate[idx]) + "\n")
+  file.close
+
+# queue for thread communication
 q = Queue(16)
 
 # start message reception thread
@@ -22,20 +42,25 @@ comm_thread = threading.Thread(target=comm.receive, args=(5555, q))
 comm_thread.daemon = True
 comm_thread.start()
 
-# # start message transmission thread
-# tx_test_thread = threading.Thread(target=tx_test)
-# tx_test_thread.daemon = True
-# tx_test_thread.start()
-
 # reception test
 while 1:
   while q.empty():
     time.sleep(0.1)
     
-  rx_obj = q.get()
-  # print "type(rx_obj)", type(rx_obj)
-  if type(rx_obj) is dict:
-    # print "dict received"
+  jsonObj = q.get()
+  if type(jsonObj) is dict:
     print "-------------------------------------------"
-    print rx_obj
-    #comm.send("127.0.0.1",7778, json.dumps(rx_obj))
+    print jsonObj
+    # execute appropiate action according to 'type'
+    if 'type' in jsonObj:
+      msgType = jsonObj['type']
+
+      if (msgType == 'accData'):
+        storeAccData(jsonObj)
+      elif (msgType == 'hrData'):
+        storeHRData(jsonObj)
+      elif (msgType == 'audioFileFrame'):
+        print "Audio file received"
+      else:
+        print "Warning: Unknown message 'type'!!!"
+
