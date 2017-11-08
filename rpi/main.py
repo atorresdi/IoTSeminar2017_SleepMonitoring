@@ -61,6 +61,7 @@ while 1:
         storeHRData(jsonObj)
       elif (msgType == 'audioFileFrame'):
         print "Audio file received"
+        # mplayer -ao pcm:file=./audio1510146852294.wav audio1510146852294.m4a
       else:
         print "Warning: Unknown message 'type'!!!"
 
