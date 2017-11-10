@@ -1,4 +1,4 @@
-
+import os
 import comm
 import datetime
 import time
@@ -60,8 +60,11 @@ while 1:
       elif (msgType == 'hrData'):
         storeHRData(jsonObj)
       elif (msgType == 'audioFileFrame'):
-        print "Audio file received"
-        # mplayer -ao pcm:file=./audio1510146852294.wav audio1510146852294.m4a
+	# convert audio file to WAV
+	filename = (jsonObj['name'])[:-4]
+        command = "mplayer -ao pcm:file=./" + filename + ".wav " + filename + ".m4a" # mplayer -ao pcm:file=./<file_name>.wav <file_name>.m4a
+        os.system(command)
+        print "command: " + command
       else:
         print "Warning: Unknown message 'type'!!!"
 
