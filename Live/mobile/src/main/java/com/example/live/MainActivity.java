@@ -2,6 +2,7 @@ package com.example.live;
 
 import android.app.ActivityManager;
 import android.app.AlarmManager;
+import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Contacts;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
@@ -22,8 +24,12 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.gson.JsonObject;
@@ -47,6 +53,13 @@ public class MainActivity extends AppCompatActivity {
     Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
     Ringtone ringtone;
 
+    /*Option List*/
+    static final String[] OPTIONS = new String[] {
+
+            "SET ALARM","Option2"
+    };
+    ListView mListView;
+
 
     public static MainActivity instance() {
         return inst;
@@ -60,15 +73,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        textOut = (TextView) findViewById(R.id.textOut);
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                new IntentFilter(ACTIVITY_NAME));
-
+        setContentView(R.layout.alarm_set_main);
         /*Alarm*/
         alarmTimePicker = (TimePicker) findViewById(R.id.alarmTimePicker);
         //alarmTextView = (TextView) findViewById(R.id.alarmText);
@@ -85,8 +90,63 @@ public class MainActivity extends AppCompatActivity {
         }
         ringtone = RingtoneManager.getRingtone(context, alarmUri);
         ringtone.setStreamType(AudioManager.STREAM_ALARM);
+        //Toolbar toolbar1 = (Toolbar) findViewById(R.id.toolbar1);
+        //setSupportActionBar(toolbar1);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        textOut = (TextView) findViewById(R.id.textOut);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
+                new IntentFilter(ACTIVITY_NAME));
 
 
+
+        /*Option List*/ //TODO: do a function with this list setup
+
+        mListView = (ListView) findViewById(R.id.list);
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, OPTIONS);
+        mListView.setAdapter(adapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                // ListView Clicked item index
+                int itemPosition     = position;
+
+                // ListView Clicked item value
+                String  itemValue    = (String) mListView.getItemAtPosition(position);
+
+                // Show Alert
+                //Toast.makeText(getApplicationContext(),
+                //        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
+                //        .show();
+
+                switch (itemPosition)
+                {
+                    case 0:
+                        setContentView(R.layout.alarm_set_main);
+                        Toolbar toolbar1 = (Toolbar) findViewById(R.id.toolbar1);
+                        setSupportActionBar(toolbar1);
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                        getSupportActionBar().setDisplayShowHomeEnabled(true);
+                        toolbar1.setNavigationOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                setContentView(R.layout.activity_main);
+                            }
+                        });
+                        break;
+
+                }
+
+            }
+
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -142,6 +202,9 @@ public class MainActivity extends AppCompatActivity {
 
             ringtone.stop();
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+            //getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+
+            setContentView(R.layout.activity_main);
             //setAlarmText("");
             Log.d("MyActivity", "Alarm Off");
         }
@@ -223,7 +286,10 @@ public class MainActivity extends AppCompatActivity {
                     setContentView(R.layout.alarm_layout);
 
                     getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-                    setContentView(R.layout.activity_main);
+                    //getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+
+
+                    //setContentView(R.layout.activity_main);
 
                     //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -234,4 +300,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+
+
 }
