@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import java.util.TimerTask;
@@ -104,4 +105,6 @@ public class MainActivity extends WearableActivity {
             }
         }
     };
+
+
 }

@@ -20,6 +20,10 @@
         <service android:name=".WatchCommService" />
         <service android:name=".RPiCommService" />
         <service android:name=".MicrophoneService" />
+        <service
+            android:name=".AlarmService"
+            android:enabled="true" />
+        <receiver android:name=".AlarmReceiver" />
 
         <activity
             android:name=".MainActivity"
