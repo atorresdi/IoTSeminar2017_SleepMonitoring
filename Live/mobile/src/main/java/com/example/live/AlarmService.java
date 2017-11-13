@@ -23,6 +23,7 @@ public class AlarmService extends IntentService {
     @Override
     public void onHandleIntent(Intent intent) {
         sendNotification("Wake Up! Wake Up!");
+
     }
 
     private void sendNotification(String msg) {
@@ -42,6 +43,8 @@ public class AlarmService extends IntentService {
         alamNotificationBuilder.setContentIntent(contentIntent);
         alarmNotificationManager.notify(1, alamNotificationBuilder.build());
         Log.d("AlarmService", "Notification sent.");
+        //ServiceComm.executeAction(this, MainActivity.ACTIVITY_NAME,
+        //        MainActivity.ACT_ALARM);
     }
 }
 
