@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /*SETTING OF ALARM SETUP SCREEN*/
         setContentView(R.layout.alarm_set_main);
         /*Alarm*/
         alarmTimePicker = (TimePicker) findViewById(R.id.alarmTimePicker);
@@ -90,6 +92,10 @@ public class MainActivity extends AppCompatActivity {
         }
         ringtone = RingtoneManager.getRingtone(context, alarmUri);
         ringtone.setStreamType(AudioManager.STREAM_ALARM);
+
+
+
+
         //Toolbar toolbar1 = (Toolbar) findViewById(R.id.toolbar1);
         //setSupportActionBar(toolbar1);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -138,6 +144,8 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
                                 setContentView(R.layout.activity_main);
+
+
                             }
                         });
                         break;
@@ -147,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

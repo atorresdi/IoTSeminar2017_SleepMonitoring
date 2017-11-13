@@ -92,5 +92,9 @@
         tools:layout_editor_absoluteX="328dp"
         tools:layout_editor_absoluteY="511dp" />
 
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_main" />
+
 
 </LinearLayout>
