@@ -2,5 +2,8 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#B40431</color>
+    <color name="silver">#C0C0C0</color>
+    <color name="float_button">#FF4081</color>
+    #610B21
 </resources>

@@ -48,14 +48,22 @@
     </ListView>
 </android.support.constraint.ConstraintLayout>
 </android.support.design.widget.CoordinatorLayout>-->
-
 <LinearLayout
+
+
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/silver"
+
+
+
+
+    >
+
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -70,31 +78,53 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
-
-
-    <ListView
-        android:id="@+id/list"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent">
-
-
-    </ListView>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-
-        app:srcCompat="@android:drawable/ic_dialog_email"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="328dp"
-        tools:layout_editor_absoluteY="511dp" />
-
     <include
         android:id="@+id/include"
         layout="@layout/content_main" />
+
+
+
+        <ListView
+            android:id="@+id/list"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent">
+
+
+        </ListView>
+
+    <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="11dp"
+            android:layout_marginEnd="26dp"
+            app:backgroundTint="@color/colorAccent"
+            app:srcCompat="@drawable/switch_pic"
+            android:adjustViewBounds="true"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="328dp"
+            tools:layout_editor_absoluteY="511dp" />
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+
+            app:srcCompat="@android:drawable/sym_def_app_icon" />
+
+    </RelativeLayout>
 
 
 </LinearLayout>

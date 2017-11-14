@@ -27,6 +27,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     /*Option List*/
     static final String[] OPTIONS = new String[] {
 
-            "SET ALARM","Option2"
+            "SET ALARM","CONFIGURATION"
     };
     ListView mListView;
 
@@ -94,12 +95,12 @@ public class MainActivity extends AppCompatActivity {
         ringtone.setStreamType(AudioManager.STREAM_ALARM);
 
 
+        /*SETTING OF CONFIGURATION SCREEN*/
+        setContentView(R.layout.configuration);
 
 
-        //Toolbar toolbar1 = (Toolbar) findViewById(R.id.toolbar1);
-        //setSupportActionBar(toolbar1);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        /*SETTING OF ALARM SETUP SCREEN*/
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -111,7 +112,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         /*Option List*/ //TODO: do a function with this list setup
-
+        redrawListView();
+        /*
         mListView = (ListView) findViewById(R.id.list);
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, OPTIONS);
         mListView.setAdapter(adapter);
@@ -144,19 +146,56 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
                                 setContentView(R.layout.activity_main);
+                                redrawListView();
 
 
                             }
                         });
                         break;
+                    case 1:
+                        setContentView(R.layout.configuration);
+                        Toolbar toolbar3 = (Toolbar) findViewById(R.id.toolbar3);
+                        setSupportActionBar(toolbar3);
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                        getSupportActionBar().setDisplayShowHomeEnabled(true);
+                        toolbar3.setNavigationOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                setContentView(R.layout.activity_main);
+                                redrawListView();
 
+                            }
+                        });
+                        SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar);
+                        final TextView seekBarValue = (TextView)findViewById(R.id.textView3);
+
+                        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+
+                            @Override
+                            public void onProgressChanged(SeekBar seekBar, int progress,
+                                                          boolean fromUser) {
+                                // TODO Auto-generated method stub
+                                seekBarValue.setText(String.valueOf(progress));
+
+                            }
+
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar) {
+                                // TODO Auto-generated method stub
+                            }
+
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar) {
+                                // TODO Auto-generated method stub
+                            }
+                        });
                 }
 
             }
 
-        });
+        });*/
 
-
+    /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(view, msg, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
         // start services
         if (!isMyServiceRunning(this, WatchCommService.class))
@@ -226,7 +265,121 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    public  void redrawListView()
+    {
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String msg;
+                if (started) {
+                    msg = "stopped";
+                    ServiceComm.executeAction(context, WatchCommService.SERVICE_NAME, WatchCommService.ACT_STOP);
+                    ServiceComm.executeAction(context, MicrophoneService.SERVICE_NAME, MicrophoneService.ACT_STOP);
+                }
+                else {
+                    msg = "started";
+                    ServiceComm.executeAction(context, WatchCommService.SERVICE_NAME, WatchCommService.ACT_START);
+                    ServiceComm.executeAction(context, MicrophoneService.SERVICE_NAME, MicrophoneService.ACT_START);
+                }
+                started = !started;
+
+                Snackbar.make(view, msg, Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+
+            }
+        });
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        textOut = (TextView) findViewById(R.id.textOut);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
+                new IntentFilter(ACTIVITY_NAME));
+        
+
+        mListView = (ListView) findViewById(R.id.list);
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, OPTIONS);
+        mListView.setAdapter(adapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                // ListView Clicked item index
+                int itemPosition     = position;
+
+                // ListView Clicked item value
+                String  itemValue    = (String) mListView.getItemAtPosition(position);
+
+                // Show Alert
+                //Toast.makeText(getApplicationContext(),
+                //        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
+                //        .show();
+
+                switch (itemPosition)
+                {
+                    case 0:
+                        setContentView(R.layout.alarm_set_main);
+                        Toolbar toolbar1 = (Toolbar) findViewById(R.id.toolbar1);
+                        setSupportActionBar(toolbar1);
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                        getSupportActionBar().setDisplayShowHomeEnabled(true);
+                        toolbar1.setNavigationOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                setContentView(R.layout.activity_main);
+                                redrawListView();
+
+
+                            }
+                        });
+                        break;
+                    case 1:
+                        setContentView(R.layout.configuration);
+                        Toolbar toolbar3 = (Toolbar) findViewById(R.id.toolbar3);
+                        setSupportActionBar(toolbar3);
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                        getSupportActionBar().setDisplayShowHomeEnabled(true);
+                        toolbar3.setNavigationOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                setContentView(R.layout.activity_main);
+                                redrawListView();
+
+                            }
+                        });
+                        SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar);
+                        final TextView seekBarValue = (TextView)findViewById(R.id.textView3);
+
+                        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+
+                            @Override
+                            public void onProgressChanged(SeekBar seekBar, int progress,
+                                                          boolean fromUser) {
+                                // TODO Auto-generated method stub
+                                seekBarValue.setText(String.valueOf(progress));
+
+                            }
+
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar) {
+                                // TODO Auto-generated method stub
+                            }
+
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar) {
+                                // TODO Auto-generated method stub
+                            }
+                        });
+                }
+
+            }
+
+        });
+
+    }
 
 
     //public void setAlarmText(String alarmText) {
