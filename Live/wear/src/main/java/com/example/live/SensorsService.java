@@ -31,7 +31,7 @@ import java.util.Date;
 public class SensorsService extends Service implements SensorEventListener {
 
     private final int HR_VAL_NUM = 5;
-    private final int ACC_SAMP_NUM = 10;
+    private final int ACC_SAMP_NUM = 5;
     private final int ACC_VAL_NUM = 10;
 
     private class HrData {
