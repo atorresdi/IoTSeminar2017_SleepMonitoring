@@ -29,6 +29,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import static com.example.live.MainActivity.IP;
 import static com.example.live.ServiceComm.IEX_ACTION;
 import static com.example.live.ServiceComm.IEX_MESSAGE;
 
@@ -65,7 +66,7 @@ public class RPiCommService extends Service {
     /*************************************************************
      * communication with other services or activities
      *************************************************************/
-    public String IP = "192.168.43.100";
+
     public int PORT = 5555;
 
     // server socket

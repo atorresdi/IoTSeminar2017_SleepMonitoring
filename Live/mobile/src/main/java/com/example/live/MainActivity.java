@@ -16,6 +16,8 @@ import android.os.Bundle;
 import android.provider.Contacts;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,8 +28,10 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -37,6 +41,7 @@ import com.google.gson.JsonObject;
 
 import java.util.Calendar;
 
+
 import static com.example.live.ServiceComm.IEX_ACTION;
 import static com.example.live.ServiceComm.IEX_MESSAGE;
 import static com.example.live.ServiceComm.isMyServiceRunning;
@@ -44,6 +49,10 @@ import static com.example.live.ServiceComm.isMyServiceRunning;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private final Context context = this;
+    public static String IP = "192.168.43.100";
+
+    public static boolean SmartLight = false;
+    public static boolean SnoringDetection = false;
 
     /*Alarm*/
     AlarmManager alarmManager;
@@ -258,6 +267,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -296,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
 
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter(ACTIVITY_NAME));
-        
+
 
         mListView = (ListView) findViewById(R.id.list);
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, OPTIONS);
@@ -350,6 +362,42 @@ public class MainActivity extends AppCompatActivity {
 
                             }
                         });
+
+                        final Switch sw_l = (Switch) findViewById(R.id.switch_light);
+                        final Switch sw_s = (Switch) findViewById(R.id.switch_snore);
+
+                        sw_l.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+
+                                if(sw_l.isChecked())
+                                {
+                                    SmartLight = true;
+                                }
+                                else
+                                {
+                                    SmartLight = false;
+                                }
+
+                            }
+                        });
+
+                        sw_s.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+
+                                if(sw_s.isChecked())
+                                {
+                                    SnoringDetection = true;
+                                }
+                                else
+                                {
+                                    SnoringDetection = false;
+                                }
+
+                            }
+                        });
+
+
+
                         SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar);
                         final TextView seekBarValue = (TextView)findViewById(R.id.textView3);
 
@@ -360,6 +408,7 @@ public class MainActivity extends AppCompatActivity {
                                                           boolean fromUser) {
                                 // TODO Auto-generated method stub
                                 seekBarValue.setText(String.valueOf(progress));
+                                //AMPLITUDE_THRESHOLD = progress;
 
                             }
 
@@ -373,6 +422,48 @@ public class MainActivity extends AppCompatActivity {
                                 // TODO Auto-generated method stub
                             }
                         });
+
+                        final TextInputEditText textIn = (TextInputEditText) findViewById(R.id.textInput);
+                        //setIP(textIn.getText().toString());
+                        /*
+                        textIn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // STUB
+                                String ip = textIn.getText().toString();
+                                if(validIP(ip))
+                                {
+                                    IP = ip;
+                                }
+                                else
+                                {
+                                    Snackbar.make(v, "Invalid IP", Snackbar.LENGTH_LONG)
+                                            .setAction("Action", null).show();
+                                }
+
+                            }
+                        });*/
+                        Button button_done = (Button) findViewById(R.id.validate_button);
+                        button_done.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                String ip = textIn.getText().toString();
+                                if(validIP(ip))
+                                {
+                                    IP = ip;
+                                    Snackbar.make(v, "Recorded IP", Snackbar.LENGTH_LONG)
+                                            .setAction("Action", null).show();
+                                }
+                                else
+                                {
+                                    Snackbar.make(v, "Invalid IP", Snackbar.LENGTH_LONG)
+                                            .setAction("Action", null).show();
+                                }
+                            }
+                        });
+
+
+
                 }
 
             }
@@ -380,6 +471,34 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    public static boolean validIP (String ip) {
+        try {
+            if ( ip == null || ip.isEmpty() ) {
+                return false;
+            }
+
+            String[] parts = ip.split( "\\." );
+            if ( parts.length != 4 ) {
+                return false;
+            }
+
+            for ( String s : parts ) {
+                int i = Integer.parseInt( s );
+                if ( (i < 0) || (i > 255) ) {
+                    return false;
+                }
+            }
+            if ( ip.endsWith(".") ) {
+                return false;
+            }
+
+            return true;
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+    }
+
 
 
     //public void setAlarmText(String alarmText) {

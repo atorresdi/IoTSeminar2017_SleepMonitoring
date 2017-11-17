@@ -32,7 +32,7 @@ public class MicrophoneService extends Service {
     private final int OUTPUT_FORMAT = MediaRecorder.OutputFormat.MPEG_4;
     private final int AUDIO_ENCODER = MediaRecorder.AudioEncoder.AAC;
 
-    private final int AMPLITUDE_THRESHOLD = 5000;
+    public static int AMPLITUDE_THRESHOLD = 5000;
     private final int RECORDING_PERIOD_MS = 1000*3;
     private final int SAMPLING_PERIOD_MS = 100;
     private final int SAMPLE_NUM = 10;
