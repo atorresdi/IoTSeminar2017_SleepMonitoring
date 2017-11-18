@@ -86,6 +86,7 @@ public class RPiCommService extends Service {
                         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                         String inputLine;
 
+                        ServiceComm.executeAction(context, WatchCommService.SERVICE_NAME, WatchCommService.ACT_VIBRATE);
                         while ((inputLine = in.readLine()) != null) {
                             Log.i(TAG, "Received: " + inputLine);
                         }
