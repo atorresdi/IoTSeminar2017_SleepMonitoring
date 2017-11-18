@@ -85,13 +85,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         /*SETTING OF ALARM SETUP SCREEN*/
-        setContentView(R.layout.alarm_set_main);
+        //setContentView(R.layout.alarm_set_main);
         /*Alarm*/
-        alarmTimePicker = (TimePicker) findViewById(R.id.alarmTimePicker);
+        //alarmTimePicker = (TimePicker) findViewById(R.id.alarmTimePicker);
         //alarmTextView = (TextView) findViewById(R.id.alarmText);
-        ToggleButton alarmToggle = (ToggleButton) findViewById(R.id.alarmToggle);
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        //ToggleButton alarmToggle = (ToggleButton) findViewById(R.id.alarmToggle);
+        //alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
+        /*
         if (alarmUri == null){
             // alert is null, using backup
             alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         }
         ringtone = RingtoneManager.getRingtone(context, alarmUri);
         ringtone.setStreamType(AudioManager.STREAM_ALARM);
-
+        */
 
         /*SETTING OF CONFIGURATION SCREEN*/
         setContentView(R.layout.configuration);
@@ -347,6 +348,23 @@ public class MainActivity extends AppCompatActivity {
 
                             }
                         });
+                                /*SETTING OF ALARM SETUP SCREEN*/
+        /*Alarm*/
+                        alarmTimePicker = (TimePicker) findViewById(R.id.alarmTimePicker);
+                        //alarmTextView = (TextView) findViewById(R.id.alarmText);
+                        ToggleButton alarmToggle = (ToggleButton) findViewById(R.id.alarmToggle);
+                        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+                        if (alarmUri == null){
+                            // alert is null, using backup
+                            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            if (alarmUri == null){
+                                // alert backup is null, using 2nd backup
+                                alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+                            }
+                        }
+                        ringtone = RingtoneManager.getRingtone(context, alarmUri);
+                        ringtone.setStreamType(AudioManager.STREAM_ALARM);
                         break;
                     case 1:
                         setContentView(R.layout.configuration);
