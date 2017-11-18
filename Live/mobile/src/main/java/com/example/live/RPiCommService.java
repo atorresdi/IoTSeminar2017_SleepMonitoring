@@ -223,6 +223,7 @@ public class RPiCommService extends Service {
                 case ACT_TERMINATE:
                     stopSelf();
                     break;
+
                 default:
                     Log.w(TAG, "Unknown action");
                     break;

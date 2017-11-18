@@ -37,6 +37,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.util.Calendar;
@@ -46,10 +47,15 @@ import static com.example.live.ServiceComm.IEX_ACTION;
 import static com.example.live.ServiceComm.IEX_MESSAGE;
 import static com.example.live.ServiceComm.isMyServiceRunning;
 
+class AlarmData {
+    public final String type = "alarmTime";
+    public long alarmTime = 0;
+}
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private final Context context = this;
-    public static String IP = "192.168.43.100";
+    public static String IP = "192.168.0.101";
 
     public static boolean SmartLight = false;
     public static boolean SnoringDetection = false;
@@ -246,15 +252,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onToggleClicked(View view) {
-
+        Gson gson = new Gson();
+        AlarmData alarmTime = new AlarmData();
         if (((ToggleButton) view).isChecked()) {
             Log.d("MyActivity", "Alarm On");
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getCurrentHour());
             calendar.set(Calendar.MINUTE, alarmTimePicker.getCurrentMinute());
+
+            //Send alarm time to RPi
+            alarmTime.alarmTime = calendar.getTimeInMillis();
+            ServiceComm.executeAction(context, RPiCommService.SERVICE_NAME, RPiCommService.ACT_SEND, gson.toJson(alarmTime));
+            
+            //Set alarm
             Intent myIntent = new Intent(MainActivity.this, AlarmReceiver.class);
             pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, myIntent, 0);
             alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
+
+
+
         } else {
             alarmManager.cancel(pendingIntent);
 
