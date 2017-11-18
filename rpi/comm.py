@@ -22,7 +22,7 @@ def receive(port, q):
   while 1:
     s.listen(1)
     conn, addr = s.accept()
-    # print 'Connection accepted', addr
+    print 'Connection accepted', addr
     
     # wait for data
     size = 0
