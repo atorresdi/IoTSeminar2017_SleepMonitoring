@@ -90,31 +90,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /*SETTING OF ALARM SETUP SCREEN*/
-        //setContentView(R.layout.alarm_set_main);
-        /*Alarm*/
-        //alarmTimePicker = (TimePicker) findViewById(R.id.alarmTimePicker);
-        //alarmTextView = (TextView) findViewById(R.id.alarmText);
-        //ToggleButton alarmToggle = (ToggleButton) findViewById(R.id.alarmToggle);
-        //alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-
-        /*
-        if (alarmUri == null){
-            // alert is null, using backup
-            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            if (alarmUri == null){
-                // alert backup is null, using 2nd backup
-                alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-            }
-        }
-        ringtone = RingtoneManager.getRingtone(context, alarmUri);
-        ringtone.setStreamType(AudioManager.STREAM_ALARM);
-        */
-
         /*SETTING OF CONFIGURATION SCREEN*/
         setContentView(R.layout.configuration);
-
-
 
         /*SETTING OF ALARM SETUP SCREEN*/
         setContentView(R.layout.activity_main);
@@ -125,114 +102,8 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter(ACTIVITY_NAME));
 
-
-
         /*Option List*/ //TODO: do a function with this list setup
         redrawListView();
-        /*
-        mListView = (ListView) findViewById(R.id.list);
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, OPTIONS);
-        mListView.setAdapter(adapter);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-
-                // ListView Clicked item index
-                int itemPosition     = position;
-
-                // ListView Clicked item value
-                String  itemValue    = (String) mListView.getItemAtPosition(position);
-
-                // Show Alert
-                //Toast.makeText(getApplicationContext(),
-                //        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
-                //        .show();
-
-                switch (itemPosition)
-                {
-                    case 0:
-                        setContentView(R.layout.alarm_set_main);
-                        Toolbar toolbar1 = (Toolbar) findViewById(R.id.toolbar1);
-                        setSupportActionBar(toolbar1);
-                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                        getSupportActionBar().setDisplayShowHomeEnabled(true);
-                        toolbar1.setNavigationOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                setContentView(R.layout.activity_main);
-                                redrawListView();
-
-
-                            }
-                        });
-                        break;
-                    case 1:
-                        setContentView(R.layout.configuration);
-                        Toolbar toolbar3 = (Toolbar) findViewById(R.id.toolbar3);
-                        setSupportActionBar(toolbar3);
-                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                        getSupportActionBar().setDisplayShowHomeEnabled(true);
-                        toolbar3.setNavigationOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                setContentView(R.layout.activity_main);
-                                redrawListView();
-
-                            }
-                        });
-                        SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar);
-                        final TextView seekBarValue = (TextView)findViewById(R.id.textView3);
-
-                        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
-
-                            @Override
-                            public void onProgressChanged(SeekBar seekBar, int progress,
-                                                          boolean fromUser) {
-                                // TODO Auto-generated method stub
-                                seekBarValue.setText(String.valueOf(progress));
-
-                            }
-
-                            @Override
-                            public void onStartTrackingTouch(SeekBar seekBar) {
-                                // TODO Auto-generated method stub
-                            }
-
-                            @Override
-                            public void onStopTrackingTouch(SeekBar seekBar) {
-                                // TODO Auto-generated method stub
-                            }
-                        });
-                }
-
-            }
-
-        });*/
-
-    /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String msg;
-                if (started) {
-                    msg = "stopped";
-                    ServiceComm.executeAction(context, WatchCommService.SERVICE_NAME, WatchCommService.ACT_STOP);
-                    ServiceComm.executeAction(context, MicrophoneService.SERVICE_NAME, MicrophoneService.ACT_STOP);
-                }
-                else {
-                    msg = "started";
-                    ServiceComm.executeAction(context, WatchCommService.SERVICE_NAME, WatchCommService.ACT_START);
-                    ServiceComm.executeAction(context, MicrophoneService.SERVICE_NAME, MicrophoneService.ACT_START);
-                }
-                started = !started;
-
-                Snackbar.make(view, msg, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
 
         // start services
         if (!isMyServiceRunning(this, WatchCommService.class))
@@ -283,9 +154,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MyActivity", "Alarm Off");
         }
     }
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -343,10 +211,6 @@ public class MainActivity extends AppCompatActivity {
                 String  itemValue    = (String) mListView.getItemAtPosition(position);
 
                 // Show Alert
-                //Toast.makeText(getApplicationContext(),
-                //        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
-                //        .show();
-
                 switch (itemPosition)
                 {
                     case 0:
@@ -364,8 +228,8 @@ public class MainActivity extends AppCompatActivity {
 
                             }
                         });
-                                /*SETTING OF ALARM SETUP SCREEN*/
-        /*Alarm*/
+                        /*SETTING OF ALARM SETUP SCREEN*/
+                        /*Alarm*/
                         alarmTimePicker = (TimePicker) findViewById(R.id.alarmTimePicker);
                         //alarmTextView = (TextView) findViewById(R.id.alarmText);
                         ToggleButton alarmToggle = (ToggleButton) findViewById(R.id.alarmToggle);
@@ -402,35 +266,21 @@ public class MainActivity extends AppCompatActivity {
 
                         sw_l.setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
-
                                 if(sw_l.isChecked())
-                                {
                                     SmartLight = true;
-                                }
                                 else
-                                {
                                     SmartLight = false;
-                                }
-
                             }
                         });
 
                         sw_s.setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
-
                                 if(sw_s.isChecked())
-                                {
                                     SnoringDetection = true;
-                                }
                                 else
-                                {
                                     SnoringDetection = false;
-                                }
-
                             }
                         });
-
-
 
                         SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar);
                         final TextView seekBarValue = (TextView)findViewById(R.id.textView3);
@@ -459,24 +309,6 @@ public class MainActivity extends AppCompatActivity {
 
                         final TextInputEditText textIn = (TextInputEditText) findViewById(R.id.textInput);
                         //setIP(textIn.getText().toString());
-                        /*
-                        textIn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // STUB
-                                String ip = textIn.getText().toString();
-                                if(validIP(ip))
-                                {
-                                    IP = ip;
-                                }
-                                else
-                                {
-                                    Snackbar.make(v, "Invalid IP", Snackbar.LENGTH_LONG)
-                                            .setAction("Action", null).show();
-                                }
-
-                            }
-                        });*/
                         Button button_done = (Button) findViewById(R.id.validate_button);
                         button_done.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -495,13 +327,8 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         });
-
-
-
                 }
-
             }
-
         });
 
     }
@@ -532,12 +359,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
-
-
-
-    //public void setAlarmText(String alarmText) {
-    //    alarmTextView.setText(alarmText);
-    //}
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -577,7 +398,6 @@ public class MainActivity extends AppCompatActivity {
     public static final String ACT_ALARM = "alarm";
 
 
-
     // callback for message reception from other service/activity
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
@@ -594,19 +414,9 @@ public class MainActivity extends AppCompatActivity {
                     textOut.setText(msg);
                     break;
                 case ACT_ALARM:
-                    String msg2 = intent.getStringExtra(IEX_MESSAGE);
-                    //textOut.setText("ALARM");
-
                     ringtone.play();
                     setContentView(R.layout.alarm_layout);
-
                     getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-                    //getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
-
-
-                    //setContentView(R.layout.activity_main);
-
-                    //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
                     break;
                 default:
