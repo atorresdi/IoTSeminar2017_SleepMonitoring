@@ -3,6 +3,9 @@ import socket
 import json
 from Queue import Queue
 
+addrPhone = ''
+PORT = 5555
+
 RX_BUF_SIZE = 1024 * 32
 rxbuf = bytearray(RX_BUF_SIZE)
 
@@ -22,6 +25,7 @@ def receive(port, q):
   while 1:
     s.listen(1)
     conn, addr = s.accept()
+    addrPhone = addr
     print 'Connection accepted', addr
     
     # wait for data
@@ -54,9 +58,9 @@ def receive(port, q):
       q.put(jsonObj) # send to main thread
     
     
-def send(addr, port, msg):
+def send(msg):
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  s.connect((addr, port))
+  s.connect((addrPhone, PORT))
   
   totalsent = 0
   while totalsent < len(msg):

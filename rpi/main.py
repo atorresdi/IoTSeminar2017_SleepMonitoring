@@ -6,6 +6,29 @@ import threading
 import json
 from Queue import Queue
 import snoreclassifier as sc
+import sleepstageclssifier as ssclassifier
+
+alarmTime = 0 # 0 means disabled
+
+# compare current time with alarm time
+def isTimeToWakeUp():
+	if (alarmTime == 0): # alarm is disabled
+		return False
+	currTime = calendar.timegm(time.gmtime())
+	if (currTime >= alarmTime):
+		return True
+	else:
+		return False
+
+# send JSON indicating that it's time to wake up
+def triggerAlarmClock():
+		jsonStr = '{ "type":"alarmTime", "alarmTime":0}'
+		comm.send(jsonStr)
+
+# send JSON requesting to vibrate
+def triggerVibration():
+		jsonStr = '{ "type":"vibrate"}'
+		comm.send(jsonStr)
 
 # file names
 dateTimeStr = datetime.datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
@@ -39,9 +62,9 @@ def storeHRData(jsonObj):
 q = Queue(16)
 
 # start message reception thread
-comm_thread = threading.Thread(target=comm.receive, args=(5555, q))
-comm_thread.daemon = True
-comm_thread.start()
+commThread = threading.Thread(target=comm.receive, args=(5555, q))
+commThread.daemon = True
+commThread.start()
 
 snoreCheck = sc.SnoreClassifier()
 snoreCheck.initialiseData()
@@ -61,6 +84,9 @@ while 1:
 
 	if (msgType == 'accData'):
 		storeAccData(jsonObj)
+		sleepStage = ssclassifier.process(jsonObj)
+		if sleepStage != "deepSleep" and isTimeToWakeUp():
+		  triggerAlarmClock()
 	elif (msgType == 'hrData'):
 		storeHRData(jsonObj)
 	elif (msgType == 'audioFileFrame'):
@@ -70,9 +96,12 @@ while 1:
 		os.system(command)
 		print "command: " + command
 		if(snoreCheck.isSnore(filename)):
+		  triggerVibration()
 		  print(" Snoring ")
 		else:
 		  print(" Not Snoring ")
+	elif (msgType == 'alarmTime'):
+		alarmTime = (jsonObj['alarmTime']/1000) - 30*60 # convert to seconds (epoch time) and subtract 30 min
 	else:
 		print "Warning: Unknown message 'type'!!!"
 
